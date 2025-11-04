@@ -1,14 +1,20 @@
 use aha::utils::tensor_utils::bitor_tensor;
 use anyhow::Result;
-use candle_core::Tensor;
+use candle_core::{IndexOp, Tensor};
 
 #[test]
 fn messy_test() -> Result<()> {
     let device = &candle_core::Device::Cpu;
-    let image_mask = Tensor::new(vec![0u32, 0, 0, 1, 0, 1], device)?;
-    let video_mask = Tensor::new(vec![0u32, 1, 0, 1, 0, 1], device)?;
-    let visual_mask = bitor_tensor(&image_mask, &video_mask)?;
-    println!("visual_mask: {}", visual_mask);
+    let grid_thw = Tensor::new(vec![vec![3u32, 12, 20], vec![5, 30, 25]], device)?;
+    let cu_seqlens = grid_thw.i((.., 1))?.mul(&grid_thw.i((.., 2))?)?;
+    let grid_t = grid_thw.i((.., 0))?.to_vec1::<u32>()?;
+    println!("cu_seqlens: {}", cu_seqlens);
+    println!("cu_seqlens rank: {}", cu_seqlens.rank());
+    println!("grid_t: {:?}", grid_t);
+    // let image_mask = Tensor::new(vec![0u32, 0, 0, 1, 0, 1], device)?;
+    // let video_mask = Tensor::new(vec![0u32, 1, 0, 1, 0, 1], device)?;
+    // let visual_mask = bitor_tensor(&image_mask, &video_mask)?;
+    // println!("visual_mask: {}", visual_mask);
     // let x = Tensor::arange_step(0.0_f32, 5., 0.5, &device)?;
     // let x_int = x.to_dtype(candle_core::DType::U32)?;
     // println!("x: {}", x);
