@@ -25,7 +25,7 @@
 * ubuntu/WSL
 ```bash
 sudo apt-get update
-sudo apt-get install -y pkg-config ffmpeg libavutil-dev libavcodec-dev libavformat-dev libavfilter-dev libavdevice-dev libswresample-dev libswscale-dev
+sudo apt-get install -y clang pkg-config ffmpeg libavutil-dev libavcodec-dev libavformat-dev libavfilter-dev libavdevice-dev libswresample-dev libswscale-dev
 ```
 * windows参考： https://github.com/zmwangx/rust-ffmpeg/wiki/Notes-on-building
 

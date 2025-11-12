@@ -47,7 +47,6 @@ impl<'a> Qwen3VLGenerateModel<'a> {
         let pre_processor = Qwen3VLProcessor::new(path, &device, dtype)?;
         let model_list = find_type_files(path, "safetensors")?;
         let vb = unsafe { VarBuilder::from_mmaped_safetensors(&model_list, dtype, &device)? };
-        let vb = vb.pp("model");
         let qwen3_vl = Qwen3VLModel::new(cfg, vb)?;
         let generation_config_path = path.to_string() + "/generation_config.json";
         let generation_config: Qwen3VLGenerationConfig =

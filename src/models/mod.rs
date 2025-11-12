@@ -21,8 +21,16 @@ pub enum WhichModel {
     MiniCPM4_0_5B,
     #[value(name = "qwen2.5vl-3b")]
     Qwen2_5vl3B,
+    #[value(name = "qwen2.5vl-7b")]
+    Qwen2_5vl7B,
     #[value(name = "qwen3vl-2b")]
     Qwen3vl2B,
+    #[value(name = "qwen3vl-4b")]
+    Qwen3vl4B,
+    #[value(name = "qwen3vl-8b")]
+    Qwen3vl8B,
+    #[value(name = "qwen3vl-32b")]
+    Qwen3vl32B,
 }
 
 pub trait GenerateModel {
@@ -84,7 +92,23 @@ pub fn load_model(model_type: WhichModel, path: &str) -> Result<ModelInstance<'_
             let model = Qwen2_5VLGenerateModel::init(path, None, None)?;
             ModelInstance::Qwen2_5VL(model)
         }
+        WhichModel::Qwen2_5vl7B => {
+            let model = Qwen2_5VLGenerateModel::init(path, None, None)?;
+            ModelInstance::Qwen2_5VL(model)
+        }
         WhichModel::Qwen3vl2B => {
+            let model = Qwen3VLGenerateModel::init(path, None, None)?;
+            ModelInstance::Qwen3VL(model)
+        } 
+        WhichModel::Qwen3vl4B => {
+            let model = Qwen3VLGenerateModel::init(path, None, None)?;
+            ModelInstance::Qwen3VL(model)
+        } 
+        WhichModel::Qwen3vl8B => {
+            let model = Qwen3VLGenerateModel::init(path, None, None)?;
+            ModelInstance::Qwen3VL(model)
+        } 
+        WhichModel::Qwen3vl32B => {
             let model = Qwen3VLGenerateModel::init(path, None, None)?;
             ModelInstance::Qwen3VL(model)
         }
