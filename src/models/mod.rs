@@ -12,7 +12,8 @@ use anyhow::Result;
 use rocket::futures::Stream;
 
 use crate::models::{
-    deepseek_ocr::generate::DeepseekOCRGenerateModel, minicpm4::generate::MiniCPMGenerateModel, qwen2_5vl::generate::Qwen2_5VLGenerateModel, qwen3vl::generate::Qwen3VLGenerateModel
+    deepseek_ocr::generate::DeepseekOCRGenerateModel, minicpm4::generate::MiniCPMGenerateModel,
+    qwen2_5vl::generate::Qwen2_5VLGenerateModel, qwen3vl::generate::Qwen3VLGenerateModel,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, clap::ValueEnum)]
