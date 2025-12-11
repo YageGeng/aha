@@ -747,11 +747,11 @@ impl Qwen3VLTextModel {
             self.mrope_section.clone(),
         )?;
         let mut xs = inputs_embeds.clone();
-        let attention_mask: Option<&Tensor> = {
+        let attention_mask: Option<Tensor> = {
             if seq_len <= 1 {
                 None
             } else {
-                Some(&prepare_causal_attention_mask(
+                Some(prepare_causal_attention_mask(
                     b_size,
                     seq_len,
                     0,
@@ -760,7 +760,7 @@ impl Qwen3VLTextModel {
             }
         };
         for (layer_idx, layer) in self.layers.iter_mut().enumerate() {
-            xs = layer.forward(&xs, &cos, &sin, attention_mask)?;
+            xs = layer.forward(&xs, &cos, &sin, attention_mask.as_ref())?;
             if let Some(deepstack_embeds) = deepstack_visual_embeds.as_ref()
                 && layer_idx < deepstack_embeds.len()
             {
@@ -867,7 +867,7 @@ impl Qwen3VLModel {
                             .reshape((*t as usize, ()))?,
                     );
                 }
-                Some(&Tensor::cat(&v_thw_vec, 0)?)
+                Some(Tensor::cat(&v_thw_vec, 0)?)
             }
             None => None,
         };
@@ -918,7 +918,11 @@ impl Qwen3VLModel {
                                 text_end = vision_indices_vec[j];
                             }
                             if token == video_token_id as u32 {
-                                thw = video_grid_thw.unwrap().i(video_index)?.to_vec1::<u32>()?;
+                                thw = video_grid_thw
+                                    .as_ref()
+                                    .unwrap()
+                                    .i(video_index)?
+                                    .to_vec1::<u32>()?;
                                 text_end = vision_indices_vec[j];
                                 video_index += 1;
                             }
@@ -987,7 +991,7 @@ impl Qwen3VLModel {
                         }
                     }
                     Err(e) => {
-                        println!("get vision_indices err: {}", e);
+                        println!("get vision_indices err: {e}");
                     }
                 };
                 if text_start < input_ids_i.dim(0)? as u32 {

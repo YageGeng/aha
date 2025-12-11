@@ -1072,16 +1072,17 @@ impl DeepseekV2Model {
     pub fn forward(&mut self, xs: &Tensor, seqlen_offset: usize) -> Result<Tensor> {
         let (bs, seq_len, _) = xs.dims3()?;
         let (cos, sin) = self.rope.forward(seqlen_offset, seq_len, xs.device())?;
-        let attention_mask: Option<&Tensor> = {
+
+        let attention_mask: Option<Tensor> = {
             if seq_len <= 1 {
                 None
             } else {
-                Some(&prepare_causal_attention_mask(bs, seq_len, 0, xs.device())?)
+                Some(prepare_causal_attention_mask(bs, seq_len, 0, xs.device())?)
             }
         };
         let mut xs = xs.clone();
         for layer in &mut self.layers {
-            xs = layer.forward(&xs, &cos, &sin, attention_mask)?;
+            xs = layer.forward(&xs, &cos, &sin, attention_mask.as_ref())?;
         }
         let xs = self.norm.forward(&xs)?;
         Ok(xs)

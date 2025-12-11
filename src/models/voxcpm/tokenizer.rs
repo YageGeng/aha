@@ -19,7 +19,7 @@ impl SingleChineseTokenizer {
             "tokenizer.json not exists in model path"
         );
         let tokenizer = Tokenizer::from_file(tokenizer_file)
-            .map_err(|e| anyhow!(format!("tokenizer from file error{}", e)))?;
+            .map_err(|e| anyhow!(format!("tokenizer from file error{e}")))?;
         let mut multichar_tokens = Vec::new();
         for (token, _) in tokenizer.get_vocab(false) {
             let len = token.chars().count();
@@ -42,7 +42,7 @@ impl SingleChineseTokenizer {
         let encode = self
             .tokenizer
             .encode(text, false)
-            .map_err(|e| anyhow!(format!("tokenizer encode error: {}", e)))?;
+            .map_err(|e| anyhow!(format!("tokenizer encode error: {e}")))?;
         let tokens = encode.get_tokens();
         // println!("tokens: {:?}", tokens);
         let mut split_character = Vec::new();

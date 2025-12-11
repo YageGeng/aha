@@ -266,11 +266,11 @@ impl MiniCPMModel {
         is_causal: bool,
     ) -> Result<Tensor> {
         let (bs, seq_len, _) = input_embeds.dims3()?;
-        let attention_mask: Option<&Tensor> = {
+        let attention_mask: Option<Tensor> = {
             if !is_causal || seq_len <= 1 {
                 None
             } else {
-                Some(&prepare_causal_attention_mask(
+                Some(prepare_causal_attention_mask(
                     bs,
                     seq_len,
                     0,
@@ -281,7 +281,8 @@ impl MiniCPMModel {
         let (cos, sin) = self.rope_emb.forward(position_id, seq_len)?;
         let mut hidden_states = input_embeds.clone();
         for decode_layer in &self.layers {
-            hidden_states = decode_layer.forward(&hidden_states, &cos, &sin, attention_mask)?;
+            hidden_states =
+                decode_layer.forward(&hidden_states, &cos, &sin, attention_mask.as_ref())?;
         }
         hidden_states = self.norm.forward(&hidden_states)?;
         Ok(hidden_states)
@@ -298,11 +299,11 @@ impl MiniCPMModel {
             _ => return Err(anyhow!("MiniCPMModelinput_embeds illigal")),
         };
         let (bs, seq_len, _) = input_embeds.dims3()?;
-        let attention_mask: Option<&Tensor> = {
+        let attention_mask: Option<Tensor> = {
             if seq_len <= 1 {
                 None
             } else {
-                Some(&prepare_causal_attention_mask(
+                Some(prepare_causal_attention_mask(
                     bs,
                     seq_len,
                     0,
@@ -313,8 +314,12 @@ impl MiniCPMModel {
         let (cos, sin) = self.rope_emb.forward(position_id, seq_len)?;
         let mut hidden_states = input_embeds.clone();
         for decode_layer in &mut self.layers {
-            hidden_states =
-                decode_layer.forward_with_cache(&hidden_states, &cos, &sin, attention_mask)?;
+            hidden_states = decode_layer.forward_with_cache(
+                &hidden_states,
+                &cos,
+                &sin,
+                attention_mask.as_ref(),
+            )?;
         }
         hidden_states = self.norm.forward(&hidden_states)?;
 

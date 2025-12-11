@@ -713,11 +713,11 @@ impl Qwen2_5VLTextModel {
             self.rope_scaling.mrope_section.clone(),
         )?;
         let mut xs = inputs_embeds.clone();
-        let attention_mask: Option<&Tensor> = {
+        let attention_mask: Option<Tensor> = {
             if seq_len <= 1 {
                 None
             } else {
-                Some(&prepare_causal_attention_mask(
+                Some(prepare_causal_attention_mask(
                     b_size,
                     seq_len,
                     0,
@@ -726,7 +726,7 @@ impl Qwen2_5VLTextModel {
             }
         };
         for layer in self.layers.iter_mut() {
-            xs = layer.forward(&xs, &cos, &sin, attention_mask)?;
+            xs = layer.forward(&xs, &cos, &sin, attention_mask.as_ref())?;
         }
         let xs = xs.apply(&self.norm)?;
         Ok(xs)
@@ -898,7 +898,7 @@ impl Qwen2_5VLModel {
                         }
                     }
                     Err(e) => {
-                        println!("get vision_indices err: {}", e);
+                        println!("get vision_indices err: {e}");
                     }
                 };
 

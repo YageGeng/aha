@@ -310,7 +310,7 @@ impl Qwen3VLProcessor {
                     let image = get_image(file);
                     match image {
                         Ok(img) => file_vec.push(img),
-                        Err(e) => println!("get_image err: {:?}", e),
+                        Err(e) => println!("get_image err: {e:?}"),
                     };
                 }
                 if !file_vec.is_empty() {
@@ -320,7 +320,7 @@ impl Qwen3VLProcessor {
                             pixel_values = Some(img_input.data);
                             image_grid_thw = Some(img_input.grid_thw);
                         }
-                        Err(e) => println!("img process_images err: {:?}", e),
+                        Err(e) => println!("img process_images err: {e:?}"),
                     };
                 }
             }
@@ -435,14 +435,12 @@ pub fn video_smart_resize(
 ) -> Result<(u32, u32)> {
     if num_frames < temporal_factor {
         return Err(anyhow!(format!(
-            "{} must be larger than temporal_factor {}",
-            num_frames, temporal_factor
+            "{num_frames} must be larger than temporal_factor {temporal_factor}"
         )));
     }
     if height < factor || width < factor {
         return Err(anyhow!(format!(
-            "height:{} or width:{} must be larger than factor:{}",
-            height, width, factor
+            "height:{height} or width:{width} must be larger than factor:{factor}"
         )));
     }
     if std::cmp::max(height, width) / std::cmp::min(height, width) > 200 {

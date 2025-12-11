@@ -232,11 +232,11 @@ impl MiniCPMModel {
             .embed_tokens
             .forward(input_ids)?
             .affine(self.cfg.scale_emb, 0.0)?;
-        let attention_mask: Option<&Tensor> = {
+        let attention_mask: Option<Tensor> = {
             if seq_len <= 1 {
                 None
             } else {
-                Some(&prepare_causal_attention_mask(
+                Some(prepare_causal_attention_mask(
                     bs,
                     seq_len,
                     0,
@@ -248,7 +248,8 @@ impl MiniCPMModel {
         let (cos, sin) = self.rope_emb.forward(position_id, seq_len)?;
         let mut hidden_states = input_embeds;
         for decode_layer in &self.layers {
-            hidden_states = decode_layer.forward(&hidden_states, &cos, &sin, attention_mask)?;
+            hidden_states =
+                decode_layer.forward(&hidden_states, &cos, &sin, attention_mask.as_ref())?;
         }
         hidden_states = self.norm.forward(&hidden_states)?;
         let hidden_state = hidden_states.narrow(1, seq_len - 1, 1)?;
@@ -266,11 +267,11 @@ impl MiniCPMModel {
             .embed_tokens
             .forward(input_ids)?
             .affine(self.cfg.scale_emb, 0.0)?;
-        let attention_mask: Option<&Tensor> = {
+        let attention_mask: Option<Tensor> = {
             if seq_len <= 1 {
                 None
             } else {
-                Some(&prepare_causal_attention_mask(
+                Some(prepare_causal_attention_mask(
                     bs,
                     seq_len,
                     0,
@@ -281,8 +282,12 @@ impl MiniCPMModel {
         let (cos, sin) = self.rope_emb.forward(position_id, seq_len)?;
         let mut hidden_states = input_embeds;
         for decode_layer in &mut self.layers {
-            hidden_states =
-                decode_layer.forward_with_cache(&hidden_states, &cos, &sin, attention_mask)?;
+            hidden_states = decode_layer.forward_with_cache(
+                &hidden_states,
+                &cos,
+                &sin,
+                attention_mask.as_ref(),
+            )?;
         }
         hidden_states = self.norm.forward(&hidden_states)?;
         let hidden_state = hidden_states.narrow(1, seq_len - 1, 1)?;

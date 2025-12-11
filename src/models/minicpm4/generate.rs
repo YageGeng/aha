@@ -119,7 +119,7 @@ impl<'a> GenerateModel for MiniCPMGenerateModel<'a> {
                     decode_ids.extend_from_slice(&error_tokens);
                 }
                 decode_ids.push(next_token);
-                let decoded_token = self.tokenizer.token_decode(decode_ids).map_err(|e| anyhow!(format!("stream decode error{}", e)))?;
+                let decoded_token = self.tokenizer.token_decode(decode_ids).map_err(|e| anyhow!(format!("stream decode error{e}")))?;
                 if decoded_token.contains("�") {
                     error_tokens.push(next_token);
                     if error_tokens.len() > 3 {

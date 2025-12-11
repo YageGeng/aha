@@ -243,7 +243,7 @@ impl Qwen2_5VLProcessor {
                     let image = get_image(file);
                     match image {
                         Ok(img) => file_vec.push(img),
-                        Err(e) => println!("get_image err: {:?}", e),
+                        Err(e) => println!("get_image err: {e:?}"),
                     };
                 }
                 if !file_vec.is_empty() {
@@ -253,7 +253,7 @@ impl Qwen2_5VLProcessor {
                             pixel_values = Some(img_input.data);
                             image_grid_thw = Some(img_input.grid_thw);
                         }
-                        Err(e) => println!("img process_images err: {:?}", e),
+                        Err(e) => println!("img process_images err: {e:?}"),
                     };
                 }
             }

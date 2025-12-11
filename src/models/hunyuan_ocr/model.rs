@@ -482,20 +482,11 @@ impl HunYuanVLTextModel {
     ) -> Result<Tensor> {
         let (b_size, seq_len, _) = inputs_embeds.dims3()?;
 
-        // let position_ids = match position_ids {
-        //     Some(ids) => ids.clone(),
-        //     None => Tensor::arange(
-        //         seqlen_offset as u32,
-        //         (seq_len + seqlen_offset) as u32,
-        //         inputs_embeds.device(),
-        //     )?
-        //     .unsqueeze(0)?,
-        // };
-        let attention_mask: Option<&Tensor> = {
+        let attention_mask: Option<Tensor> = {
             if seq_len <= 1 {
                 None
             } else {
-                Some(&prepare_causal_attention_mask(
+                Some(prepare_causal_attention_mask(
                     b_size,
                     seq_len,
                     0,
@@ -514,9 +505,9 @@ impl HunYuanVLTextModel {
             {
                 let (cos, sin) =
                     get_xd_cos_sin(&cos, &sin, position_ids, self.xdrope_section.clone())?;
-                xs = layer.forward(&xs, &cos, &sin, attention_mask)?;
+                xs = layer.forward(&xs, &cos, &sin, attention_mask.as_ref())?;
             } else {
-                xs = layer.forward(&xs, &cos, &sin, attention_mask)?;
+                xs = layer.forward(&xs, &cos, &sin, attention_mask.as_ref())?;
             }
         }
         let xs = self.norm.forward(&xs)?;
